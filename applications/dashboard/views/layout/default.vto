@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="false">
+  
+  <head>
+    
+    <meta charset="utf-8" />
+    <title>
+      Karir Dashboard
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta content="KFMEMO Intellegent Dashboard" name="description" />
+      <meta content="Themesbrand" name="author" />
+      <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+        
+      <script defer src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js"></script>
+        
+        <link rel="shortcut icon" href="/dashboard/images/companies/img-8.png">
+          
+          <link href="/dashboard/libs/jsvectormap/css/jsvectormap.min.css" rel="stylesheet" type="text/css" />
+                 <link href="/dashboard/libs/swiper/swiper-bundle.min.css" rel="stylesheet" type="text/css" />
+          
+          <link rel="stylesheet" type="text/css" href="/dashboard/libs/multi.js/multi.min.css" />
+          
+        <script src="/dashboard/js/layout.js"></script>
+        <link href="/dashboard/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/dashboard/css/icons.min.css" rel="stylesheet" type="text/css" />
+        <link href="/dashboard/css/app.min.css" rel="stylesheet" type="text/css" />
+        <link href="/dashboard/css/custom.min.css" rel="stylesheet" type="text/css" />
+        
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" type="text/css" />
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        
+        <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+        
+        <style>
+          .select2-container--default .select2-selection--multiple .select2-selection__choice {
+          background-color: #4549a2; /* Warna latar belakang pilihan */
+          color: white; /* Warna teks pilihan */
+          border-color: #414598;
+          }
+          .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+          color: white; /* Warna teks tombol hapus */
+          }
+          .select2-container--default .select2-results__option {
+          color: black; /* Warna teks hasil pencarian */
+          }
+          .select2-container--default .select2-selection--multiple {
+          background-color: white; /* Warna latar belakang input */
+          }
+          .ck-editor__editable[role="textbox"] {
+          /* editing area */
+          min-height: 200px;
+          }
+          .ck-content .image {
+          /* block images */
+          max-width: 80%;
+          margin: 20px auto;
+          }
+          
+          .swal2-cancel{
+          margin: 0.5rem;
+          }
+          /* CSS for the custom toast notification */
+          .toast-notification {
+          position:static;
+          top: 20px;
+          right: 20px;
+          padding: 10px;
+          background-color: #FD8D14;
+          color: #fff;
+          border-radius: 5px;
+          z-index: 9999;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+          }
+          
+          .toast-notification.show {
+          opacity: 1;
+          }
+        </style>
+  </head>
+  
+  <body>
+    <div id="layout-wrapper">
+      
+      <header id="page-topbar">
+        <div class="layout-width">
+          <div class="navbar-header">
+            <div class="d-flex">
+              <div class="navbar-brand-box horizontal-logo">
+                <a href="index.html" class="logo logo-dark">
+                  <span class="logo-sm">
+                    <img src="assets/images/logo-sm.png" alt="" height="22">
+                  </span>
+                  <span class="logo-lg">
+                    <img src="assets/images/logo-dark.png" alt="" height="17">
+                  </span>
+                </a>
+                
+                <a href="index.html" class="logo logo-light">
+                  <span class="logo-sm">
+                    <img src="assets/images/logo-sm.png" alt="" height="22">
+                  </span>
+                  <span class="logo-lg">
+                    <h2>KFMEMO Intelegent</h2>
+                      <img src="assets/images/logo-light.png" alt="" height="17">
+                  </span>
+                </a>
+              </div>
+              
+              <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger shadow-none" id="topnav-hamburger-icon">
+                <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+                </span>
+              </button>
+              
+            </div>
+            
+            <div class="d-flex align-items-center">
+              
+              <div class="ms-1 header-item d-none d-sm-flex">
+                <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle shadow-none" data-toggle="fullscreen">
+                  <i class='bx bx-fullscreen fs-22'></i>
+                </button>
+              </div>
+              
+              <div class="ms-1 header-item d-none d-sm-flex">
+                <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode shadow-none">
+                  <i class='bx bx-moon fs-22'></i>
+                </button>
+              </div>
+              
+              <div class="dropdown ms-sm-3 header-item topbar-user">
+                <button type="button" class="btn shadow-none" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="d-flex align-items-center">
+                    <img class="rounded-circle header-profile-user"
+                    src="/dashboard/images/users/icon-user.png"
+                    alt="Header Avatar">
+                    <span class="text-start ms-xl-2">
+                    <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">xxx</span>
+                    </span>
+                  </span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                  <!-- item-->
+                  <h6 class="dropdown-header">Welcome xxx</h6>
+                <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="mdi mdi-logout font-size-16 align-middle me-1"></i> Logout</a>
+                      <form id="logout-form" action="#" method="POST" style="display: none;">
+                        xxx
+                      </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      
+      <div id="removeNotificationModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="NotificationModalbtn-close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mt-2 text-center">
+                <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                  <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                    <h4>Are you sure ?</h4>
+                      <p class="text-muted mx-4 mb-0">Are you sure you want to remove this Notification ?</p>
+                  </div>
+              </div>
+              <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+              <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn w-sm btn-danger" id="delete-notification">Yes, Delete It!</button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      
+      <!-- ========== App Menu ========== -->
+      {{ include "partial/sidebar.vto" }}
+
+      <!-- Left Sidebar End -->
+      
+    <div class="vertical-overlay"></div>
+      
+      <!-- ============================================================== -->
+      <!-- Start right Content here -->
+      <!-- ============================================================== -->
+      <div class="main-content">
+        
+        <div class="page-content">
+          <div class="container-fluid">
+            <div class="toast-container">
+              {{ if flashMessages?.success }}
+                <div class="toast show align-items-center text-white bg-success border-0" role="alert">
+                  <div class="d-flex">
+                    <div class="toast-body">
+                    <i class="bi bi-check-circle me-2"></i>
+                      {{ flashMessages.success }}
+                    </div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                  </div>
+                </div>
+              {{ /if }}
+              
+              {{ if flashMessages?.error }}
+                <div class="toast show align-items-center text-white bg-danger border-0" role="alert">
+                  <div class="d-flex">
+                    <div class="toast-body">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                      {{ flashMessages.error }}
+                    </div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                  </div>
+                </div>
+              {{ /if }}
+            </div>
+            
+            
+            
+          </div>
+          <div class="container-fluid" id="app" hx-boost="true" hx-target="#app" hx-push-url="true">
+            {{ content }}
+          </div>
+          
+          <!-- container-fluid -->
+        </div><!-- End Page-content -->
+        
+        <footer class="footer">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+      <script>document.write(new Date().getFullYear())</script> © Karir Dashboard.
+              </div>
+              <div class="col-sm-6">
+                <div class="text-sm-end d-none d-sm-block">
+                  Design & Develop by Farid
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
+        
+        
+      </div>
+      <!-- end main content-->
+      
+    </div>
+    <!-- END layout-wrapper -->
+    
+    
+    <!--start back-to-top-->
+    <!-- <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
+                    <i class="ri-arrow-up-line"></i>
+    </button> -->
+    <!--end back-to-top-->
+    
+    <!--preloader-->
+    <!-- <div id="preloader">
+      <div id="status">
+        <div class="spinner-border text-primary avatar-sm" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div> -->
+    
+    <div class="modal" id="confirm-modal" tabindex="-1" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreenssss">
+        <div class="modal-content">
+          <div class="modal-body text-center p-5">
+            <lord-icon src="https://cdn.lordicon.com/tdrtiskw.json" trigger="loop"
+            colors="primary:#121331,secondary:#f06548" style="width:120px;height:120px">
+                </lord-icon>
+                
+                <div class="mt-4">
+                    <h4 class="mb-3" id="warning-title">Confirmation</h4>
+                      <p class="text-muted mb-4 fs-16" id="warning-message">
+                        Are you sure?
+                      </p>
+                </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" id="confirmYes">Yes, continue</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+    
+    <!-- VELZON -->
+      <script src="/dashboard/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <script src="/dashboard/libs/simplebar/simplebar.min.js"></script>
+      <script src="/dashboard/libs/node-waves/waves.min.js"></script>
+      <script src="/dashboard/libs/feather-icons/feather.min.js"></script>
+      <script src="/dashboard/js/pages/plugins/lord-icon-2.1.0.js"></script>
+      <script src="/dashboard/js/plugins.js"></script>
+        
+      <script src="/dashboard/libs/flatpickr/plugins/monthSelect/index.js"></script>
+        <link href="/dashboard/libs/flatpickr/plugins/monthSelect/style.css" rel="stylesheet" type="text/css" />
+        
+        
+        <!-- apexcharts -->
+      <script src="/dashboard/libs/apexcharts/apexcharts.min.js"></script>
+        
+        <!-- Vector map-->
+      <script src="/dashboard/libs/jsvectormap/js/jsvectormap.min.js"></script>
+      <script src="/dashboard/libs/jsvectormap/maps/world-merc.js"></script>
+        
+        <!--Swiper slider js-->
+      <script src="/dashboard/libs/swiper/swiper-bundle.min.js"></script>
+        
+        <!-- Dashboard init -->
+      <script src="/dashboard/js/pages/dashboard-ecommerce.init.js"></script>
+        
+        <!-- App js -->
+      <script src="/dashboard/js/app.js"></script>
+        
+        <!-- END VELZON -->
+        
+        <!-- Jquery -->
+      <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script>
+        
+        <!-- Sweet Alert -->
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
+        <!--select2 cdn-->
+      <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        
+      <script src="/dashboard/js/pages/select2.init.js"></script>
+      <script src="/dashboard/js/pages/notifications.init.js"></script>
+        
+        <!-- Fontawesome -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.js" integrity="sha512-MXWlk6UOVfE/OdjLyby2zlldm3K36O43PyJmAmXfib7wWEUkediNdwRx4rrvM1GtP1yO+sDLCkvXV6o03sQHmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        
+        <!-- LordIcon -->
+      <script src="https://cdn.lordicon.com/lordicon.js"></script>
+        
+        <!-- DataTables -->
+      <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+      <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+      <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+      <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+      <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+      <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+        
+        <!-- CKEDITOR -->
+      <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/super-build/ckeditor.js"></script>
+        
+      <script src="/assets/js/csrf-token.js"></script>
+        
+      <script src="https://www.google.com/recaptcha/api.js"></script>
+        
+        <script type="text/javascript">
+          
+          const confirm_modal_el = document.querySelector('#confirm-modal');
+          const confirm_modal = bootstrap.Modal.getOrCreateInstance(confirm_modal_el);
+          function showConfirmModal(message) {
+          return new Promise((resolve) => {
+          // const modal = new bootstrap.Modal(document.getElementById('confirm-modal'));
+          document.getElementById('warning-message').textContent = message;
+          
+          // Handle "Yes" button click
+          document.getElementById('confirmYes').onclick = function () {
+          resolve(true);
+          confirm_modal.hide();
+          };
+          
+          // Handle "Cancel" button click or close
+          confirm_modal_el.addEventListener('hidden.bs.modal', function (event) {
+          resolve(false);
+          })
+          
+          confirm_modal.show();
+          });
+          }
+          
+          $('a[href*="/destroy"]').click(async function(e){
+          e.preventDefault();
+          const confirmed = await showConfirmModal("Do you really want to delete this item?");
+          if (confirmed) {
+          window.location.href = $(this).attr('href');
+          } else {
+          return false;
+          }
+          });
+          
+          $('a.send-confirm-btn').click(async function(e){
+          e.preventDefault();
+          const confirmed = await showConfirmModal("I confirm that the data submitted is valid and legitimate according to the applicable provisions.");
+          if (confirmed) {
+          window.location.href = $(this).attr('href');
+          } else {
+          return false;
+          }
+          });
+          
+          window.acl = [];
+          
+          function parseRouteNameFromUrl(url) {
+          try {
+          let u = new URL(url, window.location.origin); // supaya relative URL aman
+          let path = u.pathname.replace(/^\/+|\/+$/g, ""); // trim "/"
+          
+          let parts = path.split("/");
+          
+          // Ambil hanya 2 segment pertama → contoh: role/search/1 → role.search
+          if (parts.length >= 2) {
+          return parts[0] + "." + parts[1];
+          } else if (parts.length === 1) {
+          return parts[0];
+          }
+          return null;
+          } catch (e) {
+          return null;
+          }
+          }
+          
+          function canByUrl(url) {
+          let routeName = parseRouteNameFromUrl(url);
+          return routeName && (window.acl.includes(routeName) || window.acl.includes(routeName.split('.')[0]+'.*'));
+          }
+          
+          function applyPermissionCheck() {
+          if( window.acl.includes("*") ) return;
+          
+          document.querySelectorAll("td a[href]").forEach(link => {
+          let href = link.getAttribute("href");
+          
+          // skip anchor kosong / #
+          if (!href || href.startsWith("#")) return;
+          
+          if (!canByUrl(href)) {
+          // cara 1: hide
+          link.classList.add("d-none");
+          
+          // cara 2: disable (opsional, pilih salah satu)
+          // link.addEventListener("click", e => e.preventDefault());
+          // link.style.pointerEvents = "none";
+          // link.style.opacity = "0.5";
+          }
+          });
+          }
+          
+          
+          document.addEventListener("DOMContentLoaded", function() {
+          applyPermissionCheck();
+          });
+          
+          
+        </script>
+        <script>
+          // Auto hide toasts after 3 seconds
+          document.addEventListener('DOMContentLoaded', function() {
+          const toasts = document.querySelectorAll('.toast');
+          toasts.forEach(toast => {
+          setTimeout(() => {
+          toast.classList.remove('show');
+          }, 3000);
+          });
+          });
+          
+          // Reload table on data change
+          document.addEventListener('dataChanged', function() {
+          htmx.trigger('#data-table', 'refresh');
+          });
+        </script>
+        
+        {{ if scripts }}
+          {{ scripts }}
+        {{ /if }}
+  </body>
+  
+</html>
