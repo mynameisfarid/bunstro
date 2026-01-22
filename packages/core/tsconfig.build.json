@@ -1,0 +1,25 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"declaration": true,
+		"emitDeclarationOnly": false,
+		"skipLibCheck": true,
+		"moduleResolution": "bundler",
+
+		"lib": ["ESNext"],
+		"types": [
+			"bun-types" // add Bun global
+		]
+	},
+	"include": ["src/**/*"],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"**/*.test.ts",
+		"**/*.test.ts",
+		"**/adapters/*",
+		"**/databases/*"
+	]
+}

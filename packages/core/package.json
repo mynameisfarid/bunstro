@@ -1,0 +1,78 @@
+{
+	"name": "@bunstro/core",
+	"version": "0.1.0",
+	"description": "BUNSTRO framework core - Fast, secure, stable fullstack framework for Bun",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./database": {
+			"types": "./dist/database/index.d.ts",
+			"default": "./dist/database/index.js"
+		},
+		"./http": {
+			"types": "./dist/http/index.d.ts",
+			"default": "./dist/http/index.js"
+		},
+		"./router": {
+			"types": "./dist/router/index.d.ts",
+			"default": "./dist/router/index.js"
+		},
+		"./logger": {
+			"types": "./dist/logger/index.d.ts",
+			"default": "./dist/logger/index.js"
+		},
+		"./helpers": {
+			"types": "./dist/helpers/index.d.ts",
+			"default": "./dist/helpers/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"scripts": {
+		"build": "bun build.ts",
+		"prepublishOnly": "bun run build"
+	},
+	"keywords": [
+		"bun",
+		"framework",
+		"fullstack",
+		"typescript",
+		"fast",
+		"bunstro"
+	],
+	"author": "Your Name",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/mynameisfarid/bunstro",
+		"directory": "packages/core"
+	},
+	"peerDependencies": {
+		"bun": ">=1.0.0"
+	},
+	"dependencies": {
+		"date-fns": "^4.1.0",
+		"drizzle-orm": "^0.45.1",
+		"eta": "^4.5.0",
+		"mime-types": "^2.1.35",
+		"nanoid": "^5.0.9",
+		"postgres": "^3.4.5"
+	},
+	"optionalDependencies": {
+		"pg": "^8.11.0",
+		"mysql2": "^3.9.0",
+		"better-sqlite3": "^9.4.0",
+		"mssql": "^10.0.0"
+	},
+	"devDependencies": {
+		"@types/mime-types": "^2.1.4",
+		"typescript": "^5.9.3"
+	}
+}
