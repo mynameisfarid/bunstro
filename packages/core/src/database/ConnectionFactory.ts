@@ -1,28 +1,29 @@
 import type { SQL } from "drizzle-orm";
-import type { DBConfig, DBInstance, DatabaseConfig } from "../types";
-
-export type DBFactory = (
-	name: string,
-	config: DBConfig,
-) => Promise<DBInstance> | DBInstance;
+import type { DBConfig, DBInstance, DatabaseConfig, DBFactory } from "../types";
 
 export class ConnectionFactory {
-	private factories = new Map<string, DBFactory>();
+	private static factories = new Map<string, DBFactory>();
 
 	constructor(private config: DatabaseConfig) {}
 
-	register(name: string, factory: DBFactory) {
-		this.factories.set(name, factory);
+	static register(type: string, factory: DBFactory) {
+		// this.factories.set(name, factory);
+		if (this.factories.has(type)) return;
+		this.factories.set(type, factory);
 	}
 
 	async create(name: string): Promise<DBInstance> {
-		const factory = this.factories.get(name);
-
-		if (!factory) {
-			throw new Error(`Database driver "${name}" not registered`);
+		console.log("FACTORY INIT");
+		const conf = this.config.connections[name];
+		if (!conf) {
+			throw new Error(`Database connection "${name}" not found`);
 		}
 
-		const conf = this.config.connections[name];
+		const factory = ConnectionFactory.factories.get(conf.type);
+
+		if (!factory) {
+			throw new Error(`Database driver "${conf.type}" not registered`);
+		}
 
 		return factory(name, conf);
 

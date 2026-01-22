@@ -18,10 +18,10 @@ export async function createApp(config: BunstroConfig) {
 	}
 
 	// View (future-proof)
-	if (config.view) {
-		const { ViewEngine } = await import("../view/ViewEngine");
-		container.view = ViewEngine.init(config.view);
-	}
+	// if (config.view) {
+	const { ViewEngine } = await import("../view/ViewEngine");
+	container.view = ViewEngine.getInstance();
+	// }
 
 	const server = new HttpServer({
 		port: config.server?.port ?? 3000,
@@ -43,7 +43,9 @@ export async function createApp(config: BunstroConfig) {
 
 		async stop() {
 			await server.stop();
-			await container.db?.close?.();
+			if (config.database) {
+				await this.container.db?.shutdown();
+			}
 		},
 	};
 }

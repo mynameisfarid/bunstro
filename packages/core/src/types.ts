@@ -1,5 +1,6 @@
 import type { DatabaseManager } from "./database/DatabaseManager";
 import type { ViewEngine } from "./view/ViewEngine";
+import type { Logger } from "./logger/Logger";
 
 export interface BunstroConfig {
 	server?: {
@@ -58,11 +59,12 @@ export interface AppContext {
 	body: any;
 
 	// db: ReturnType<DatabaseManager["createContextFacade"]>;
-	db: DatabaseManager | null;
-	view: ViewEngine;
+	db?: DatabaseManager | null;
+	view?: ViewEngine | null;
+	logger: Logger;
 
 	json(data: any, status?: number): Response;
-	html(template: string, data?: any, status?: number): Promise<Response>;
+	// html(template: string, data?: any, status?: number): Promise<Response>;
 	redirect(url: string, status?: number): Response;
 }
 
@@ -75,6 +77,7 @@ export interface DBInstance {
 
 	healthCheck(): Promise<boolean>;
 	stats(): any;
+	close(): any;
 }
 
 export interface DBConfig {
@@ -92,3 +95,8 @@ export type DatabaseConfig = {
 	eager_load: string;
 	connections: Record<string, DBConfig>;
 };
+
+export type DBFactory = (
+	name: string,
+	config: DBConfig,
+) => Promise<DBInstance> | DBInstance;

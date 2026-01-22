@@ -1,9 +1,10 @@
 import type { Server } from "bun";
-import logger from "../logger/Logger";
+// import logger from "../logger/Logger";
 import { Router, Route } from "../router/Router";
-import db from "../database/DatabaseManager";
-import { DatabaseManager } from "../database/DatabaseManager";
-import view from "../view/ViewEngine";
+// import db from "../database/DatabaseManager";
+// import { DatabaseManager } from "../database/DatabaseManager";
+// import view from "../view/ViewEngine";
+import type { AppContainer } from "../app/AppContainer";
 
 import type { AppContext } from "../types";
 
@@ -16,6 +17,7 @@ interface HttpServerConfig {
 	router: Router;
 	staticPath?: string;
 	staticUrl?: string;
+	container: AppContainer;
 	onError?: (error: Error, req: Request) => Response;
 }
 
@@ -28,11 +30,13 @@ export class HttpServer {
 	private server?: Server<any>;
 	private config: HttpServerConfig;
 	private router: Router;
+	private container: AppContainer;
 	private staticCache: Map<string, Response> = new Map();
 
 	constructor(config: HttpServerConfig) {
 		this.config = config;
 		this.router = config.router ?? new Router();
+		this.container = config.container;
 	}
 
 	async start(): Promise<void> {
@@ -43,8 +47,7 @@ export class HttpServer {
 			error: this.handleError.bind(this),
 		});
 
-		logger.log(
-			"app",
+		console.log(
 			`🚀 Server running on http://${this.config.host}:${this.config.port}`,
 		);
 	}
@@ -54,36 +57,30 @@ export class HttpServer {
 		const method = req.method;
 		const path = url.pathname;
 
+		// Fast path for static files
+		if (
+			this.config.staticPath &&
+			path.startsWith(this.config.staticUrl || "/")
+		) {
+			const staticResponse = await this.serveStatic(path);
+			if (staticResponse) return staticResponse;
+		}
+
+		// Find matching route (optimized)
+		const match = this.router.match(method, path);
+		if (!match) return NOT_FOUND;
+
+		// Fast context building (lazy parsing)
+		const context = this.buildContextFast(req, url, match.params, match.query);
+
 		try {
-			// Fast path for static files
-			if (
-				this.config.staticPath &&
-				path.startsWith(this.config.staticUrl || "/")
-			) {
-				const staticResponse = await this.serveStatic(path);
-				if (staticResponse) return staticResponse;
-			}
-
-			// Find matching route (optimized)
-			const match = this.router.match(method, path);
-
-			if (!match) return NOT_FOUND;
-
-			// Fast context building (lazy parsing)
-			const context = this.buildContextFast(
-				req,
-				url,
-				match.params,
-				match.query,
-			);
-
 			// Execute handler directly (no middleware overhead for now)
 			const result = await match.route.handler(context);
 
 			// Fast response conversion
 			return this.convertToResponse(result);
 		} catch (error: any) {
-			logger.error(`Request error: ${error.message}`);
+			context.logger.error(`Request error: ${error.message}`);
 			return this.config.onError
 				? this.config.onError(error, req)
 				: new Response(JSON.stringify({ error: "Internal Server Error" }), {
@@ -149,8 +146,11 @@ export class HttpServer {
 				req.headers.get("x-forwarded-for") ||
 				req.headers.get("x-real-ip") ||
 				"unknown",
-			db: db.createContextFacade(),
-			view: view,
+			// db: db.createContextFacade(),
+			// view: view,
+			db: this.container.db,
+			view: this.container.view,
+			logger: this.container.logger,
 			json(data: any, status = 200) {
 				return new Response(JSON.stringify(data), {
 					status,
@@ -158,13 +158,13 @@ export class HttpServer {
 				});
 			},
 
-			html(template: string, data: any, status?: number) {
-				if (status) {
-					return view.response(template, data, { status: status });
-				}
+			// html(template: string, data: any, status?: number) {
+			// 	if (status) {
+			// 		return view.response(template, data, { status: status });
+			// 	}
 
-				return view.response(template, data);
-			},
+			// 	return view.response(template, data);
+			// },
 
 			redirect(url: string, status = 302) {
 				return new Response(null, {
@@ -210,7 +210,7 @@ export class HttpServer {
 	}
 
 	private handleError(error: Error): Response {
-		logger.error("Server error:", error);
+		this.container.logger.error("Server error:", error);
 		return new Response(JSON.stringify({ error: "Internal Server Error" }), {
 			status: 500,
 			headers: JSON_HEADERS,
@@ -218,10 +218,10 @@ export class HttpServer {
 	}
 
 	async stop(): Promise<void> {
-		logger.info("Server stopped");
+		this.container.logger.info("Server stopped");
 		if (this.server) {
 			this.server.stop();
-			logger.info("Server stopped");
+			this.container.logger.info("Server stopped");
 		}
 	}
 
@@ -239,11 +239,11 @@ export class HttpServer {
 		console.log(`\n🛑 Shutting down (${signal}) gracefully`);
 
 		try {
-			await db.shutdown();
+			await this.container.db?.shutdown();
 
 			if (this.server) {
 				this.server.stop();
-				logger.info("Server stopped");
+				this.container.logger.info("Server stopped");
 			}
 		} catch (err) {
 			console.error("Shutdown error", err);

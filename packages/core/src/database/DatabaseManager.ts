@@ -1,10 +1,10 @@
 import { ConnectionFactory } from "./ConnectionFactory";
 import { DBInstance, DatabaseConfig } from "../types";
-import type { BunstroConfig } from "../types";
+// import type { BunstroConfig } from "../types";
 import logger from "../logger/Logger";
 
 export class DatabaseManager {
-	private static instance: DatabaseManager;
+	private static instance: DatabaseManager | null = null;
 
 	private factory: ConnectionFactory;
 	private databaseConfig: DatabaseConfig;
@@ -16,6 +16,7 @@ export class DatabaseManager {
 	// }
 
 	private constructor(config: DatabaseConfig) {
+		console.log("DBManager Constructor");
 		this.databaseConfig = config;
 		this.defaultConnection =
 			config?.default ?? Object.keys(config?.connections ?? {})[0] ?? "default";
@@ -109,6 +110,10 @@ export class DatabaseManager {
 				const conn = await manager.getConnection();
 				return conn.healthCheck();
 			},
+			async close() {
+				const conn = await manager.getConnection();
+				return conn.close();
+			},
 		};
 
 		/**
@@ -130,4 +135,4 @@ export class DatabaseManager {
 	}
 }
 
-export default DatabaseManager.getInstance();
+// export default DatabaseManager.getInstance();
